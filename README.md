@@ -79,4 +79,4 @@ The goal is to encourage students to take smaller, consistent steps towards comp
 **Repository:** [PawPlan on GitHub](https://github.com/Haseena177/PawPlan)
 
 ---
-Project deployment configured with GitHub Pages.
+(Project deployment configured with GitHub Pages.)
