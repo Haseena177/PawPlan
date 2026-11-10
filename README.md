@@ -58,16 +58,6 @@ Unlike traditional assignment trackers, PawPlan introduces an interactive dragon
 | Local Storage | Saving application data in the browser |
 | GLB 3D Model | Interactive dragon model |
 
-## 🚀 How to Run PawPlan
-
-1. Clone or download this repository.
-2. Open the project folder in Visual Studio Code.
-3. Install the **Live Server** extension if it is not already installed.
-4. Open `index.html`.
-5. Right-click the file and select **Open with Live Server**.
-6. The PawPlan website should open in your browser.
-
-**Note:** An internet connection is required to load the Three.js library from its CDN.
 
 ## 💾 Data Storage and Limitations
 
