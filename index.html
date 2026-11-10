@@ -1,149 +1,311 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>PawPlan | Student Productivity</title>
-
-    <!-- Connect CSS -->
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PawPlan — Make progress, not panic</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}
+  </script>
+  <script type="module" src="dragon3d.js"></script>
+  <script defer src="script.js"></script>
 </head>
-
 <body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#dashboard">
+        <span class="brand-mark">P</span>
+        <span>PawPlan<small>STUDY COMPANION</small></span>
+      </a>
+      <p class="nav-label">WORKSPACE</p>
+      <nav class="main-nav">
+        <button class="nav-link active" data-page="dashboardPage"><span>▦</span> Dashboard</button>
+        <button class="nav-link" data-page="assignmentsPage"><span>☷</span> Assignments</button>
+        <button class="nav-link" data-page="focusPage"><span>◷</span> Focus Mode</button>
+        <button class="nav-link" data-page="teamPage"><span>♧</span> TeamSpace</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="mini-dragon">🐉</div>
+        <p>Small steps grow<br><strong>big dragons.</strong></p>
+        <span class="muted">Your study journey, one task at a time.</span>
+      </div>
+    </aside>
 
-    <div class="app-container">
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <span class="eyebrow">YOUR PERSONAL STUDY SPACE</span>
+          <h1 id="pageHeading">Dashboard</h1>
+        </div>
+        <div class="topbar-actions">
+          <div class="date-chip" id="todayLabel"></div>
+          <button id="profileButton" class="profile-button" type="button" aria-label="Open account" title="Account">
+            <span id="profileInitial">?</span>
+          </button>
+        </div>
+      </header>
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
+      <section class="page active" id="dashboardPage">
+        <div class="welcome-row">
+          <div>
+            <p class="eyebrow">WELCOME BACK</p>
+            <h2>Make today count.</h2>
+            <p class="muted">A little progress every day adds up.</p>
+          </div>
+          <button class="primary-btn" data-go="assignmentsPage">＋ Add assignment</button>
+        </div>
 
-            <div class="logo">
-                <h2>PAW<span>PLAN</span></h2>
-                <p>YOUR ACADEMIC COMPANION</p>
+        <div class="stats-grid">
+          <article class="stat-card">
+            <span class="stat-icon">☷</span>
+            <span class="stat-label">Active assignments</span>
+            <strong id="activeCount">0</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-icon">✓</span>
+            <span class="stat-label">Submitted</span>
+            <strong id="submittedCount">0</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-icon">✦</span>
+            <span class="stat-label">Dragon points</span>
+            <strong id="dragonPoints">0</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-icon">♨</span>
+            <span class="stat-label">On-time submissions</span>
+            <strong id="onTimeCount">0</strong>
+          </article>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="panel dragon-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">YOUR COMPANION</span>
+                <h3 id="dragonStageName">A tiny egg</h3>
+              </div>
+              <span class="stage-pill" id="dragonStagePill">STAGE 1</span>
             </div>
-
-            <nav>
-                <a href="#" class="nav-link active">Dashboard</a>
-                <a href="#" class="nav-link">Assignments</a>
-                <a href="#" class="nav-link">Focus Mode</a>
-                <a href="#" class="nav-link">TeamSpace</a>
-            </nav>
-
-            <div class="sidebar-bottom">
-                <p>Stay focused.</p>
-                <p>Keep progressing.</p>
+            <div class="dragon-display">
+              <div class="dragon-glow"></div>
+              <div id="dragonEgg" class="dragon-egg">🥚</div>
+              <div id="dragon3DScene" class="dragon-3d hidden"></div>
             </div>
+            <p class="dragon-caption" id="dragonCaption">Your journey starts here. Submit 5 assignments on time to hatch!</p>
+            <div class="progress-meta">
+              <span>Evolution progress</span>
+              <strong id="evolutionProgressText">0 / 5</strong>
+            </div>
+            <div class="progress-track">
+              <div id="evolutionProgress" class="progress-fill"></div>
+            </div>
+            <div class="points-line">
+              <span>✦ <strong id="dragonPointsLarge">0</strong> points</span>
+              <span id="dragonCycleText">Lifetime on-time: 0</span>
+            </div>
+          </article>
 
-        </aside>
-
-
-        <!-- MAIN CONTENT -->
-        <main class="main-content">
-
-            <!-- HEADER -->
-            <header class="top-header">
+          <div class="right-stack">
+            <article class="panel">
+              <div class="panel-heading">
                 <div>
-                    <p class="small-heading">YOUR PRODUCTIVITY SPACE</p>
-                    <h1>Welcome back.</h1>
-                    <p class="subtitle">
-                        Let's make today productive.
-                    </p>
+                  <span class="eyebrow">COMING UP</span>
+                  <h3>Upcoming deadlines</h3>
                 </div>
+                <button class="text-btn" data-go="assignmentsPage">View all</button>
+              </div>
+              <div id="upcomingList" class="compact-list">
+                <p class="empty-state">No upcoming deadlines. Enjoy the breathing room!</p>
+              </div>
+            </article>
 
-                <div class="profile">
-                    <div class="profile-circle">P</div>
+            <article class="panel">
+              <div class="panel-heading">
+                <div>
+                  <span class="eyebrow">YOUR DAY</span>
+                  <h3>Personal reminders</h3>
                 </div>
-            </header>
+              </div>
+              <form id="reminderForm" class="reminder-form">
+                <input id="reminderText" type="text" placeholder="What do you need to remember?" required>
+                <input id="reminderWhen" type="datetime-local" required>
+                <button class="primary-btn" type="submit">Add</button>
+              </form>
+              <div id="reminderList" class="reminder-list">
+                <p class="empty-state">Add a reminder to keep it on your radar.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
 
+      <section class="page" id="assignmentsPage">
+        <div class="section-intro">
+          <div>
+            <span class="eyebrow">STAY ON TOP OF YOUR WORK</span>
+            <h2>Assignments</h2>
+            <p class="muted">Break big deadlines into small, achievable steps.</p>
+          </div>
+        </div>
 
-            <!-- OVERVIEW -->
-            <section class="overview">
+        <article class="panel form-panel">
+          <h3>＋ Create an assignment</h3>
+          <form id="assignmentForm" class="assignment-form">
+            <label>
+              Assignment title
+              <input id="assignmentTitle" type="text" placeholder="e.g. Robotics design report" required>
+            </label>
+            <label>
+              Subject
+              <input id="assignmentSubject" type="text" placeholder="e.g. Engineering Mathematics" required>
+            </label>
+            <label>
+              Deadline
+              <input id="assignmentDeadline" type="datetime-local" required>
+            </label>
+            <label>
+              Difficulty
+              <select id="assignmentDifficulty">
+                <option value="Easy">Easy</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+            </label>
+            <label class="full-width">
+              Your checklist <span class="field-hint">Enter one task per line.</span>
+              <textarea id="assignmentTasks" rows="4" placeholder="Research the topic&#10;Complete the calculations&#10;Prepare the final report" required></textarea>
+            </label>
+            <button class="primary-btn" type="submit">Create assignment</button>
+          </form>
+        </article>
 
-                <div class="section-heading">
-                    <h2>Your Overview</h2>
-                    <p>Keep track of your academic progress.</p>
-                </div>
+        <div class="list-heading">
+          <div>
+            <span class="eyebrow">IN PROGRESS</span>
+            <h3>Active assignments</h3>
+          </div>
+          <span class="count-pill" id="activeListCount">0 active</span>
+        </div>
+        <div id="activeAssignments" class="assignment-list">
+          <p class="empty-state panel">No active assignments yet. Create your first one above.</p>
+        </div>
 
-                <div class="stats-container">
+        <div class="list-heading completed-heading">
+          <div>
+            <span class="eyebrow">LOOK HOW FAR YOU'VE COME</span>
+            <h3>Submitted assignments</h3>
+          </div>
+        </div>
+        <div id="completedAssignments" class="assignment-list">
+          <p class="empty-state panel">Your submitted work will appear here.</p>
+        </div>
+        <div class="list-heading completed-heading">
+  <div>
+    <span class="eyebrow">DEADLINES PASSED</span>
+    <h3>Missed Assignments</h3>
+  </div>
+</div>
+<div id="missedAssignments" class="assignment-list">
+  <p class="empty-state panel">No missed assignments. Keep it up!</p>
+</div>
+      </section>
 
-                    <div class="stat-card">
-                        <p>Total Assignments</p>
-                        <h3>0</h3>
-                        <span>All your assignments</span>
-                    </div>
+      <section class="page" id="focusPage">
+        <div class="section-intro">
+          <span class="eyebrow">ONE THING AT A TIME</span>
+          <h2>Focus Mode</h2>
+          <p class="muted">Set a timer, settle in, and give one task your full attention.</p>
+        </div>
+        <article class="panel focus-panel">
+          <div class="focus-dragon">🐉</div>
+          <span class="eyebrow">FOCUS SESSION</span>
+          <div id="focusClock" class="focus-clock">25:00</div>
+          <p id="focusStatus" class="muted">Ready when you are.</p>
+          <div class="timer-setup">
+            <label>
+              Session length
+              <select id="focusDuration">
+                <option value="15">15 minutes</option>
+                <option value="25" selected>25 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="45">45 minutes</option>
+                <option value="60">60 minutes</option>
+              </select>
+            </label>
+          </div>
+          <div class="focus-controls">
+            <button id="startFocus" class="primary-btn">Start focus</button>
+            <button id="pauseFocus" class="secondary-btn" disabled>Pause</button>
+            <button id="stopFocus" class="danger-btn" disabled>Stop session</button>
+          </div>
+          <p class="focus-note">Stopping or leaving an active session costs 5 dragon points. Pausing is always penalty-free. Completing the timer earns 5 dragon points.</p>
+        </article>
+      </section>
 
-                    <div class="stat-card">
-                        <p>Completed</p>
-                        <h3>0</h3>
-                        <span>Successfully submitted</span>
-                    </div>
+      <section class="page" id="teamPage">
+        <div class="section-intro">
+          <span class="eyebrow">BETTER TOGETHER</span>
+          <h2>TeamSpace</h2>
+          <p class="muted">Plan group work and keep everyone's workload fair.</p>
+        </div>
+        <article class="panel form-panel">
+          <h3>Build a team task plan</h3>
+          <form id="teamForm" class="team-form">
+            <label>
+              Group assignment
+              <input id="teamTitle" type="text" placeholder="e.g. Mechatronics group project" required>
+            </label>
+            <label>
+              Team members <span class="field-hint">One name per line.</span>
+              <textarea id="teamMembers" rows="3" placeholder="Aisha&#10;Daniel&#10;You" required></textarea>
+            </label>
+            <label class="full-width">
+              Tasks <span class="field-hint">One task per line. Optionally add | Easy, | Medium or | Hard.</span>
+              <textarea id="teamTasks" rows="5" placeholder="Research components | Easy&#10;Build prototype | Hard&#10;Prepare presentation | Medium" required></textarea>
+            </label>
+            <div class="full-width mode-choice">
+              <label><input type="radio" name="teamMode" value="auto" checked> Automatically balance by difficulty</label>
+              <label><input type="radio" name="teamMode" value="manual"> Let me assign each task</label>
+            </div>
+            <button class="primary-btn" type="submit">Create team plan</button>
+          </form>
+        </article>
+        <div id="teamPlan" class="team-plan"></div>
+        <p class="team-disclaimer">Team plans are saved in this browser only. Real-time sharing between different team members requires an online database and backend, which is not included in this prototype.</p>
+      </section>
 
-                    <div class="stat-card">
-                        <p>Pending</p>
-                        <h3>0</h3>
-                        <span>Still in progress</span>
-                    </div>
+      <footer class="footer">PAWPLAN <span>•</span> MAKE PROGRESS, NOT PANIC</footer>
+    </main>
+  </div>
 
-                </div>
-
-            </section>
-
-
-            <!-- LOWER DASHBOARD -->
-            <section class="dashboard-bottom">
-
-                <div class="deadlines-panel">
-                    <div class="panel-heading">
-                        <h2>Upcoming Deadlines</h2>
-                        <a href="#">View all</a>
-                    </div>
-
-                    <div class="empty-state">
-                        <h3>No deadlines yet</h3>
-                        <p>Your upcoming assignments will appear here.</p>
-                    </div>
-                </div>
-
-
-                <!-- DRAGON AREA -->
-                <div class="dragon-panel">
-
-                    <p class="small-heading">YOUR COMPANION</p>
-
-                    <div class="dragon-placeholder">
-                        <span>DRAGON</span>
-                    </div>
-
-                    <h2>Your dragon awaits.</h2>
-
-                    <p>
-                        Complete assignments on time to help
-                        your dragon evolve.
-                    </p>
-
-                    <div class="dragon-progress">
-                        <div class="progress-label">
-                            <span>Evolution progress</span>
-                            <span>0 / 5</span>
-                        </div>
-
-                        <div class="progress-bar">
-                            <div class="progress-fill"></div>
-                        </div>
-                    </div>
-
-                </div>
-
-            </section>
-
-        </main>
-
-    </div>
-
-    <!-- Connect JavaScript -->
-    <script src="script.js"></script>
-
+  <div id="authModal" class="auth-overlay hidden" aria-hidden="true">
+    <section class="auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <button id="closeAuthModal" class="auth-close" type="button" aria-label="Close">×</button>
+      <div class="auth-brand"><span class="brand-mark">P</span><span>PawPlan</span></div>
+      <h2 id="authTitle">Welcome to PawPlan</h2>
+      <p id="authSubtitle" class="auth-subtitle">Sign in with your APU student email.</p>
+      <div id="authTabs" class="auth-tabs">
+        <button type="button" class="auth-tab active" data-auth-tab="login">Login</button>
+        <button type="button" class="auth-tab" data-auth-tab="register">Register</button>
+      </div>
+      <form id="authForm" class="auth-form">
+        <label for="authEmail">APU student email</label>
+        <input id="authEmail" type="email" autocomplete="username" placeholder="yourname@mail.apu.edu.my" required>
+        <label for="authPassword">Password</label>
+        <input id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters" required>
+        <button id="authSubmit" class="primary-btn auth-submit" type="submit">Login</button>
+      </form>
+      <p id="authMessage" class="auth-message" aria-live="polite"></p>
+      <div id="accountDetails" class="account-details hidden">
+        <div class="account-avatar" id="accountInitial">?</div>
+        <p>Signed in as</p>
+        <strong id="accountEmail"></strong>
+        <button id="logoutButton" class="danger-btn" type="button">Log out</button>
+      </div>
+      <p class="auth-disclaimer">Demo account only. PawPlan checks the email format but cannot verify APU enrolment. Accounts are stored in this browser and are not secure production authentication.</p>
+    </section>
+  </div>
 </body>
 </html>
