@@ -55,7 +55,7 @@
 
   const saveAssignments = () => write(KEYS.assignments, assignments);
   const saveDragon = () => write(KEYS.dragon, dragon);
-  function launchConfetti() {
+  function launchConfetti(messageText = '🎉 Great job! +5 Dragon Points!') {
     const colors = ['#d33b52', '#f5c15d', '#80d5a0', '#8bbcff', '#ffffff'];
     const container = document.createElement('div');
 
@@ -80,7 +80,7 @@
 
     const message = document.createElement('div');
     message.className = 'confetti-message';
-    message.textContent = '🎉 Great job! +5 Dragon Points!';
+    message.textContent = messageText;
     container.appendChild(message);
 
     setTimeout(() => container.remove(), 4000);
@@ -259,7 +259,10 @@ const progress = stage === 1
   function deductPoints() {
     recordPenalty();
   }
-  function showFullScreenFire() {
+  function showFullScreenFire(
+    message = 'Your dragon is not happy!',
+    heading = '🔥 DEADLINE MISSED 🔥'
+) {
   // Remove an existing fire effect if one is still present.
   document.getElementById('pawplan-fire-overlay')?.remove();
 
@@ -268,8 +271,8 @@ const progress = stage === 1
 
   overlay.innerHTML = `
     <div class="fire-message">
-      <div class="fire-warning">🔥 DEADLINE MISSED 🔥</div>
-      <div class="fire-subtext">Your dragon is not happy!</div>
+      <div class="fire-warning">${heading}</div>
+      <div class="fire-subtext">${message}</div>
     </div>
 
     <div class="fire-particles">
@@ -675,8 +678,27 @@ if (onTime && !a.missedPenaltyApplied) {
 
     $('onTimeCount').textContent = dragon.onTimeCount;
 
-const upcoming = assignments
-  .filter(a => !a.completed)
+const upcoming = [
+  ...assignments
+    .filter(a => !a.completed)
+    .map(a => ({
+      title: a.title,
+      subject: a.subject,
+      deadline: a.deadline,
+      missed: a.missedPenaltyApplied
+    })),
+
+  ...(teamPlan &&
+      teamPlan.deadline &&
+      teamPlan.assigned.some(member => !member.submitted)
+    ? [{
+        title: teamPlan.title,
+        subject: 'Group assignment',
+        deadline: teamPlan.deadline,
+        missed: false
+      }]
+    : [])
+]
   .sort((a, b) =>
     new Date(a.deadline) - new Date(b.deadline)
   )
@@ -689,10 +711,9 @@ $('upcomingList').innerHTML = upcoming.length
           <strong>${esc(a.title)}</strong>
           <small>${esc(a.subject)}</small>
         </div>
-
         <span>
           ${
-            a.missedPenaltyApplied
+            a.missed
               ? '<strong class="missed-label">MISSED</strong>'
               : dateText(a.deadline)
           }
@@ -868,19 +889,23 @@ $('upcomingList').innerHTML = upcoming.length
     focus.remaining = remaining;
     showClock(remaining);
 
-    if (remaining <= 0) {
-      clearFocus();
+if (remaining <= 0) {
+    clearFocus();
 
-      dragon.points += 5;
-      saveDragon();
-      renderDragon();
+    dragon.points += 5;
+    saveDragon();
+    renderDragon();
 
-      $('focusStatus').textContent =
-        'Session complete! You earned 5 dragon points.';
+    launchConfetti(
+      '🎉 Timer completed successfully +5 dragon points 🎉'
+    );
 
-      $('focusClock').textContent = '00:00';
-      return;
-    }
+    $('focusStatus').textContent =
+      'Session complete! You earned 5 dragon points.';
+
+    $('focusClock').textContent = '00:00';
+    return;
+}
 
     write(KEYS.focus, focus);
   }
@@ -964,12 +989,17 @@ $('upcomingList').innerHTML = upcoming.length
       'Paused. Take a breath; no points lost.';
   });
 
-  $('stopFocus').addEventListener('click', () => {
+$('stopFocus').addEventListener('click', () => {
     if (!focus) return;
 
     if (!focus.penaltyApplied) {
       focus.penaltyApplied = true;
       recordPenalty();
+
+      showFullScreenFire(
+        'Timer stopped too early - 5 dragon points',
+        '🔥 FOCUS SESSION STOPPED 🔥'
+      );
     }
 
     clearFocus();
@@ -977,7 +1007,7 @@ $('upcomingList').innerHTML = upcoming.length
     $('startFocus').textContent = 'Start focus';
     $('focusStatus').textContent =
       'Session stopped. 5 dragon points deducted.';
-  });
+});
 
   function restoreFocus() {
     if (!focus) return;
@@ -1130,17 +1160,19 @@ $('upcomingList').innerHTML = upcoming.length
       }));
     }
 
-    teamPlan = {
-      title: $('teamTitle').value.trim(),
-      members,
-      tasks,
-      mode,
-      assigned,
-      createdAt: new Date().toISOString()
-    };
+teamPlan = {
+  title: $('teamTitle').value.trim(),
+  deadline: $('teamDeadline').value,
+  members,
+  tasks,
+  mode,
+  assigned,
+  createdAt: new Date().toISOString()
+};
 
-    saveTeamPlan();
-    renderTeamPlan();
+saveTeamPlan();
+renderTeamPlan();
+renderDashboard();
   });
 
   function renderTeamPlan() {
